@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New event</title>
+    <style>
+        .invalid {
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <p id="notification" th:if="${success}" th:text="${success}" style="color: green"></p>
+    <p id="notification" th:if="${error}" th:text="${error}" style="color: red"></p>
+    <form th:action="@{/events/create}" th:object="${form}" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="title">Title</label>
+            <input id="title" name="title" type="text" th:field="*{title}"
+                   th:classappend="${#fields.hasErrors('title')} ? 'invalid' : ''" required/>
+            <small th:if="${#fields.hasErrors('title')}"
+                   th:errors="*{title}" style="color: red"></small>
+        </div>
+        <div>
+            <label for="description">Description</label>
+            <textarea id="description" name="description" th:field="*{description}"
+                      th:classappend="${#fields.hasErrors('description')} ? 'invalid' : ''" required></textarea>
+            <small th:if="${#fields.hasErrors('description')}"
+                   th:errors="*{description}" style="color: red"></small>
+        </div>
+        <div>
+            <label for="date">Date</label>
+            <input id="date" name="date" type="date" th:field="*{date}"
+                   th:classappend="${#fields.hasErrors('date')} ? 'invalid' : ''" required/>
+            <small th:if="${#fields.hasErrors('date')}"
+                   th:errors="*{date}" style="color: red"></small>
+        </div>
+
+        <div>
+            <label for="local">Local</label>
+            <input id="local" name="local" type="text" th:field="*{local}"
+                   th:classappend="${#fields.hasErrors('local')} ? 'invalid' : ''" required/>
+            <small th:if="${#fields.hasErrors('local')}"
+                   th:errors="*{local}" style="color: red"></small>
+        </div>
+
+        <div id="upload-wrapper">
+            <input id="picture" type="file" name="picture" style="display: none;" accept="image/png, image/jpeg"/>
+            <button id="btn-upload" type="button">Upload picture</button>
+            <br/>
+            <img id="picture-preview" th:src="@{/img/banner.png}" width="200"/>
+        </div>
+        <hr/>
+        <button>New event</button>
+    </form>
+</main>
+<script>
+    setTimeout(() => {
+        document.getElementById("notification").remove();
+    }, 3000);
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const [date] = new Date().toISOString().split("T");
+        document.getElementById("date").min = date;
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("picture").value = "";
+
+        document.getElementById("btn-upload").addEventListener("click", () => {
+            document.getElementById("picture").click();
+        });
+
+        document.getElementById("picture").addEventListener("change", (ev) => {
+            const reader = new FileReader();
+            const [pictureFile] = ev.target.files;
+            reader.addEventListener("load", () => document.getElementById("picture-preview").src = reader.result);
+
+            if (pictureFile) {
+                reader.readAsDataURL(pictureFile);
+            }
+
+            const btn = document.createElement("button");
+            btn.innerText = 'x';
+            btn.type = "button";
+            btn.onclick = function () {
+                document.getElementById("picture-preview").src = "/img/banner.png";
+                document.getElementById("picture").value = "";
+                this.remove();
+            }
+            document.getElementById("upload-wrapper").appendChild(btn);
+        });
+    });
+</script>
+</body>
+</html>

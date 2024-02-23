@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+<body>
+<main>
+    <p id="notification" th:if="${error}" th:text="${error}" style="color: red"></p>
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Birthdate</th>
+            <th>Picture</th>
+            <th>Last modification</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td>
+                <a th:href="@{/users/{id}(id=${user.id})}" th:text="${user.id}"></a>
+            </td>
+            <td th:text="${user.fullname}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${#temporals.format(user.birthdate, 'dd/MM/yyyy')}"></td>
+            <td>
+                <img width="64" th:src="${user.pictureUrl}?: '/img/avatar.png'" alt="User picture">
+            </td>
+            <td th:text="${#temporals.format(user.updatedAt, 'dd/MM/yyyy hh:mm')}"></td>
+            <td>
+                <form class="block-user-action"
+                      th:action="@{/users/{id}/{type}(id=${user.id},type=${user.blocked ? 'unblock':'block'})}"
+                      method="post">
+                    <button th:text="${user.blocked} ? 'Unblock' : 'Block'"></button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+<script>
+    setTimeout(() => {
+        document.getElementById("notification").remove();
+    }, 3000);
+
+    for (let form of document.querySelectorAll("form.block-user-action")) {
+        form.addEventListener("submit", (ev) => {
+            const canChange = confirm("Are you sure?");
+            if (!canChange) {
+                ev.preventDefault();
+            }
+        });
+    }
+</script>
+</body>
+</html>

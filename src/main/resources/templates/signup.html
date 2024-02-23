@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup</title>
+    <style>
+        .invalid {
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <form th:action="@{/signup}" method="post" th:object="${form}">
+        <div>
+            <label for="fullname">Fullname</label>
+            <input type="text" name="fullname" id="fullname" th:field="*{fullname}"
+                   th:classappend="${#fields.hasErrors('fullname')} ? 'invalid' : ''" required/>
+            <small th:if="${#fields.hasErrors('fullname')}"
+                   th:errors="*{fullname}" style="color: red"></small>
+        </div>
+        <div>
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" th:field="*{email}"
+                   th:classappend="${#fields.hasErrors('email')} ? 'invalid' : ''" required/>
+            <small th:if="${#fields.hasErrors('email')}"
+                   th:errors="*{email}" style="color: red"></small>
+        </div>
+
+        <div>
+            <label for="birthdate">Birthdate</label>
+            <input type="date" name="birthdate" id="birthdate" th:field="*{birthdate}"
+                   th:classappend="${#fields.hasErrors('birthdate')} ? 'invalid' : ''" required/>
+            <small th:if="${#fields.hasErrors('birthdate')}"
+                   th:errors="*{birthdate}" style="color: red"></small>
+        </div>
+
+        <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" th:field="*{password}"
+                   th:classappend="${#fields.hasErrors('password')} ? 'invalid' : ''" required/>
+            <small th:if="${#fields.hasErrors('password')}"
+                   th:errors="*{password}" style="color: red"></small>
+        </div>
+
+        <button>Cadastrar</button>
+    </form>
+</main>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Events</title>
+</head>
+<body>
+    <main>
+        <a th:href="@{/events/new}">New event</a>
+        <hr />
+        <div th:each="event: ${events}">
+            <img th:src="${event.bannerUrl} ? '/uploads/'+${event.bannerUrl} : '/img/banner.png'" alt="Banner event" width="250"/>
+            <h3 >
+                <th:container th:text="${event.title}+' '+${#temporals.format(event.date, 'dd/MM')}"></th:container>
+                <small th:text="${event.status}"></small>
+            </h3>
+            <a th:href="@{/events/{id}/edit(id=${event.id})}">Edit</a>
+            <p th:text="${event.description}"></p>
+            <b th:text="${event.local}"></b>
+            <a th:href="@{/events/{id}(id=${event.id})}">More details</a>
+            <hr />
+        </div>
+    </main>
+</body>
+</html>

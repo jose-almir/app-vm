@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Detail</title>
+</head>
+<body>
+<main>
+    <img th:src="${event.bannerUrl} ? '/uploads/'+${event.bannerUrl} : '/img/banner.png'" alt="Banner event" width="250"/>
+    <h1 th:text="${event.title}"></h1>
+    <p th:text="${event.description}"></p>
+    <p th:text="${event.local}"></p>
+    <p th:text="${#temporals.format(event.date, 'dd/MM')}"></p>
+    <form th:action="@{/events/{id}/change-status(id=${event.id})}" method="post">
+        <select id="event-status" name="status" th:value="${event.status}">
+            <option th:each="evStatus : ${T(eventy.domain.enums.EventStatus).values()}" th:value="${evStatus.value}"
+                    th:selected="${event.status.value == evStatus.value}" th:text="${evStatus.label}"></option>
+        </select>
+    </form>
+    <h2>Participants</h2>
+    <hr/>
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="reg : ${registrations}">
+            <td th:text="${reg.user.id}"></td>
+            <td>
+                <img th:src="${reg.user.pictureUrl} ?: '/img/avatar.png'" alt="User avatar" width="64"/>
+                <th:container th:text="${reg.user.fullname}"></th:container>
+            </td>
+            <td>
+                <form
+                        th:action="@{/events/registrations/{eventId}/{userId}/change-status(eventId=${event.id}, userId=${reg.user.id})}"
+                        method="post">
+                    <select class="status-select" name="status" th:value="${reg.status.value}">
+                        <option th:each="regStatus : ${T(eventy.domain.enums.RegistrationStatus).values()}"
+                                th:value="${regStatus.value}" th:text="${regStatus.label}"
+                                th:selected="${reg.status.value == regStatus.value}"></option>
+                    </select>
+                </form>
+            </td>
+            <td>
+                <form class="remove-registration-action"
+                      th:action="@{/events/registrations/{eventId}/{userId}/remove(eventId=${event.id}, userId=${reg.user.id})}"
+                      method="post">
+                    <button>Remove</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+<script>
+    document.getElementById("event-status").addEventListener("change", (ev) => {
+        ev.target.parentNode.submit();
+    })
+
+    for (let select of document.querySelectorAll(".status-select")) {
+        select.addEventListener("change", (ev) => ev.target.parentNode.submit());
+    }
+
+    for (let form of document.querySelectorAll("form.remove-registration-action")) {
+        form.addEventListener("submit", (ev) => {
+            const canChange = confirm("Are you sure?");
+            if (!canChange) {
+                ev.preventDefault();
+            }
+        });
+    }
+</script>
+</body>
+</html>

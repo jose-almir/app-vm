@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<main>
+    <p id="notification" th:if="${error}" th:text="${error}" style="color: red"></p>
+    <form method="post" th:object="${form}">
+        <div>
+            <label for="fullname">Fullname</label>
+            <input type="text" name="fullname" id="fullname" th:field="*{fullname}"
+                   th:classappend="${#fields.hasErrors('fullname')} ? 'invalid' : ''" required/>
+            <small th:if="${#fields.hasErrors('fullname')}"
+                   th:errors="*{fullname}" style="color: red"></small>
+        </div>
+
+        <div>
+            <label for="birthdate">Birthdate</label>
+            <input type="date" name="birthdate" id="birthdate" th:field="*{birthdate}"
+                   th:classappend="${#fields.hasErrors('birthdate')} ? 'invalid' : ''" required/>
+            <small th:if="${#fields.hasErrors('birthdate')}"
+                   th:errors="*{birthdate}" style="color: red"></small>
+        </div>
+
+        <button>Atualizar</button>
+    </form>
+</main>
+<script>
+    setTimeout(() => {
+        document.getElementById("notification").remove();
+    }, 3000);
+</script>
+</body>
+</html>

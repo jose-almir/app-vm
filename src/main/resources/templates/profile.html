@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<main>
+    <p id="notification" th:if="${error}" th:text="${error}" style="color: red"></p>
+
+    <img width="128" th:src="${user.pictureUrl} ? '/uploads/'+${user.pictureUrl} : '/img/avatar.png'" alt="User picture">
+    <form th:action="@{/profile/picture-upload}" method="post" enctype="multipart/form-data">
+        <input id="picture" type="file" name="picture" style="display: none;" accept="image/png, image/jpeg"/>
+        <button id="btn-upload" type="button">Upload picture</button>
+    </form>
+    <h2 th:text="${user.fullname}"></h2>
+    <hr/>
+    <table>
+        <tr>
+            <td>Email</td>
+            <td th:text="${user.email}"></td>
+        </tr>
+        <tr>
+            <td>Birthdate</td>
+            <td th:text="${#temporals.format(user.birthdate, 'dd/MM')}"></td>
+        </tr>
+    </table>
+    <a th:href="@{/profile/edit}">Edit profile</a>
+    <a th:href="@{/change-password}">Change password</a>
+
+    <h2>My events</h2>
+    <hr/>
+    <p th:if="${#arrays.isEmpty(confirmed)}">No events!</p>
+    <div th:each="reg : ${confirmed}" th:object="${reg}">
+        <img th:src="*{event.bannerUrl} ? '/uploads/'+*{event.bannerUrl} : '/img/banner.png'" alt="Banner event"
+             width="250"/>
+        <h4 th:text="|*{event.title}, *{#temporals.format(event.date, 'dd/MMM')}|"></h4>
+        <p th:text="*{event.description}"></p>
+        <p><b th:text="*{event.status.label}"></b></p>
+        <form th:action="@{/events/registrations/{eventId}/{userId}/cancel(eventId=*{event.id},userId=*{user.id})}"
+              method="post">
+            <button th:disabled="*{event.status.name() == 'FINISHED' or event.status.name() == 'IN_PROGRESS'}">Cancel
+                participation
+            </button>
+        </form>
+        <a href="#">Ver mais</a>
+    </div>
+
+    <h2>My requests</h2>
+    <hr/>
+    <p th:if="${#arrays.isEmpty(requests)}">No requests!</p>
+    <div th:each="reg : ${requests}" th:object="${reg}">
+        <img th:src="*{event.bannerUrl} ? '/uploads/'+*{event.bannerUrl} : '/img/banner.png'" alt="Banner event"
+             width="250"/>
+        <h4 th:text="|*{event.title}, *{#temporals.format(event.date, 'dd/MMM')}|"></h4>
+        <p th:text="*{event.description}"></p>
+        <p><b th:text="*{event.status.label}"></b></p>
+        <p><b th:text="|Request status: *{status.label}|"></b></p>
+        <form th:action="@{/events/registrations/{eventId}/{userId}/cancel(eventId=*{event.id},userId=*{user.id})}"
+              method="post">
+            <button th:disabled="*{event.status.name() != 'PENDING' or status.name() == 'REJECTED'}">Cancel
+                request
+            </button>
+        </form>
+        <a href="#">Ver mais</a>
+    </div>
+</main>
+<script>
+    setTimeout(() => {
+        document.getElementById("notification")?.remove();
+    }, 3000);
+
+    document.getElementById("btn-upload").addEventListener("click", () => {
+        document.getElementById("picture").click();
+    });
+
+    document.getElementById("picture").addEventListener("change", (ev) => {
+        const [pictureFile] = ev.target.files;
+
+        if (pictureFile) {
+            const extFile = pictureFile.name.split(".")[1];
+            if (["png", "jpg", "jpeg"].includes(extFile)) {
+                ev.target.parentNode.submit();
+            }
+        }
+    });
+</script>
+</body>
+</html>

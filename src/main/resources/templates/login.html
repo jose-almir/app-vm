@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form th:method="post" th:action="@{/login}">
+        <div th:if="${param.error}">
+            <div style="color: red">Invalid Username or Password</div>
+        </div>
+        <div th:if="${param.logout}">
+            <div style="color: green">You have been logged out.</div>
+        </div>
+        <input type="email" name="email" value="alice@example.com"/>
+        <input type="password" name="password" value="12345678"/>
+        <button>Login</button>
+    </form>
+</body>
+</html>
